@@ -32,3 +32,9 @@ main
             * Easy  
             * Medium  
             * Hard  
+
+Currently there are four hyper parameters to tune,
+  * hard negative mining batch size
+  * feature vector threshold
+  * window threshold
+  * resolution
