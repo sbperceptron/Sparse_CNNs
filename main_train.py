@@ -47,16 +47,21 @@ hnm_path="./data/crops/train/negative/"+objects+"/hnm/"
 # the network Hyper parameters refer to section V C
 # The control parameters parsing from the command line
 ap = argparse.ArgumentParser()
-ap.add_argument("-fv", "--fvthres", required=True,
+ap.add_argument("-fv", "--fvthresh",type=int, required=True,
 	help="The min number of points required to \
 	extract a feature vector")
-ap.add_argument("-wd", "--wdthresh", required=True,
+ap.add_argument("-wd", "--wdthresh",type=int, required=True,
 	help="The min number of features for a window")
-ap.add_argument("-r", "--resolution", required=True,
-	help="The resolution of the voxel in the pointcloud")
+ap.add_argument("-r", "--resolution",type=float, required=False,
+	default=0.2,help="The resolution of the voxel in the pointcloud")
 ap.add_argument("-bhnm", "--batchsize_hnm", required=True,
 	help="The hard negative mining batchsize can be a value \
 	close to the the number of cores on the sytem running it")
+ap.add_argument("-resume_train", "--resume_train", type=bool, default=False,
+	help="if to resume training from a set of available weights")
+ap.add_argument("-epoch", "--epoch", type=int, required=False,
+	help="The epoch from which to begin the training")
+
 args = vars(ap.parse_args())
 ###################################################
 fvthresh=args["fvthresh"] #min number of points for feature extraction
@@ -64,7 +69,7 @@ wdthresh=args["wdthresh"] # min number of feature vectors per window
 #refer to the voting for voting in online pc(Wang and Posner) Section 7 C
 resolution=args["resolution"] 
 # The hnm batch size
-batchsizehnm=args["batchsizehnm"] # make it equal to the number of cores -2 on the system
+batchsizehnm=args["batchsize_hnm"] # make it equal to the number of cores -2 on the system
 ###################################################
 
 # The path where we store the scores and loss values
@@ -110,67 +115,68 @@ y=(-40, 40)
 z=(-2.5, 1.5)
 ######################################################
 
-#####################################################################################################
-#####################################################################################################
-################################# No pretrained weights #############################################
-#####      init the weights and biases based on Delving deep into Rectifiers(He et al.)
-#####################################################################################################
-########################################################
-weights_path="./data/crops/\
-weights/"+objects+"/2layer/"+folder+"/"
-if not os.path.exists(weights_path):
-	os.makedirs(weights_path)
-########################################################
-num_filters1=8 # Refer to fig 3 in vote3deep
-channels1=6 # number of features for each grid cell
-wght1=torch.empty(num_filters1,channels1,filter_size[0],filter_size[1],filter_size[2])# fig 3 from paper w1
-weights1=nn.init.kaiming_normal_(wght1,mode='fan_in',nonlinearity='relu')
-weights1=weights1.numpy()
-weights1=weights1.T
-b1=np.zeros(num_filters1)
+if not args["resume_train"]:
+	#####################################################################################################
+	#####################################################################################################
+	################################# No pretrained weights #############################################
+	#####      init the weights and biases based on Delving deep into Rectifiers(He et al.)
+	#####################################################################################################
+	########################################################
+	weights_path="./data/crops/weights/"+objects+"/2layer/"+folder+"/"
+	if not os.path.exists(weights_path):
+		os.makedirs(weights_path)
+	########################################################
+	num_filters1=8 # Refer to fig 3 in vote3deep
+	channels1=6 # number of features for each grid cell
+	wght1=torch.empty(num_filters1,channels1,filter_size[0],filter_size[1],filter_size[2])# fig 3 from paper w1
+	weights1=nn.init.kaiming_normal_(wght1,mode='fan_in',nonlinearity='relu')
+	weights1=weights1.numpy()
+	weights1=weights1.T
+	b1=np.zeros(num_filters1)
 
-num_filters2=8 # Refer to fig 3 in vote3deep
-channels2=8 # number of features for each grid cell
-wght2=torch.empty(num_filters2,channels2,filter_size[0],filter_size[1],filter_size[2])# fig 3 from paper w1
-weights2=nn.init.kaiming_normal_(wght2,mode='fan_in',nonlinearity='relu')
-weights2=weights2.numpy()
-weights2=weights2.T
-b2=np.zeros(num_filters2)
+	num_filters2=8 # Refer to fig 3 in vote3deep
+	channels2=8 # number of features for each grid cell
+	wght2=torch.empty(num_filters2,channels2,filter_size[0],filter_size[1],filter_size[2])# fig 3 from paper w1
+	weights2=nn.init.kaiming_normal_(wght2,mode='fan_in',nonlinearity='relu')
+	weights2=weights2.numpy()
+	weights2=weights2.T
+	b2=np.zeros(num_filters2)
 
 
-wght3=torch.empty((RFCar[0])*(RFCar[1])*(RFCar[2])*8,1)# fig 3 from paper w2
-weights3=nn.init.kaiming_normal_(wght3,mode='fan_in',nonlinearity='relu')
-weights3=weights3.numpy()
-b3=np.zeros(1) # page 4 b=0
-curr_epoch=0
+	wght3=torch.empty((RFCar[0])*(RFCar[1])*(RFCar[2])*8,1)# fig 3 from paper w2
+	weights3=nn.init.kaiming_normal_(wght3,mode='fan_in',nonlinearity='relu')
+	weights3=weights3.numpy()
+	b3=np.zeros(1) # page 4 b=0
+	curr_epoch=0
 
-train_obj=Train_Model2(batchsize,full_pcs_bin_paths, full_pcs_labels_paths,full_pcs_calibs_paths,car_positives,neg,hnm_path,resolution,epochs,\
-  lr,SGDmomentum,L2weightdecay,N,weights1,weights2,weights3,b1,b2,b3,RFCar,pad,curr_epoch,channels1,channels2,num_filters1,num_filters2, \
-  x,y,z,fvthresh,wdthresh,batchsizehnm, objects, weights_path, values_path)
+	train_obj=Train_Model2(batchsize,full_pcs_bin_paths, full_pcs_labels_paths,full_pcs_calibs_paths,car_positives,neg,hnm_path,resolution,epochs,\
+	  lr,SGDmomentum,L2weightdecay,N,weights1,weights2,weights3,b1,b2,b3,RFCar,pad,curr_epoch,channels1,channels2,num_filters1,num_filters2, \
+	  x,y,z,fvthresh,wdthresh,batchsizehnm, objects, weights_path, values_path)
 
-train_obj.train()
-#######################################################################################################
-####################### IF YOU HAVE PRETRAINED WEIGHTS ################################################
-####################### READ COMMENT ABOVE, AND COMMENT THE NEXT LINES 
-####################### Training from a set of known pretrained weights.  #############################
-# weights_path="./data/crops/\
-# weights/"+objects+"/2layer/"+folder+"/"
-# epoch=9
-# file_name="epoch_"+str(epoch)+".weights.npz"
-# num_filters1=8 # Refer to fig 3 in vote3deep
-# channels1=6 # number of features for each grid cell
-# num_filters2=8 # Refer to fig 3 in vote3deep
-# channels2=8 # number of features for each grid cell
-########################################################################################################
-# wghts=np.load(weights_path+file_name)
+	train_obj.train()
 
-# weights1=wghts['w1']
-# weights2=wghts['w2']
-# weights3=wghts['w3']
-# b1=wghts['b1']
-# b2=wghts['b2']
-# b3=wghts['b3']
-# train_obj=Train_Model2(batchsize,full_pcs_bin_paths, full_pcs_labels_paths,full_pcs_calibs_paths,car_positives,neg,hnm_path,resolution,epochs,\
-#   lr,SGDmomentum,L2weightdecay,N,weights1,weights2,weights3,b1,b2,b3,RFCar,pad,epoch,channels1,channels2,num_filters1,num_filters2, \
-#   x,y,z,fvthresh,wdthresh,batchsizehnm,objects,weights_path,values_path)
-# train_obj.train()
+else:
+	#######################################################################################################
+	####################### IF YOU HAVE PRETRAINED WEIGHTS ################################################
+	####################### READ COMMENT ABOVE, AND COMMENT THE NEXT LINES 
+	####################### Training from a set of known pretrained weights.  #############################
+	weights_path="./data/crops/weights/"+objects+"/2layer/"+folder+"/"
+	epoch=args["epoch"]
+	file_name="epoch_"+str(epoch)+".weights.npz"
+	num_filters1=8 # Refer to fig 3 in vote3deep
+	channels1=6 # number of features for each grid cell
+	num_filters2=8 # Refer to fig 3 in vote3deep
+	channels2=8 # number of features for each grid cell
+	#######################################################################################################
+	wghts=np.load(weights_path+file_name)
+
+	weights1=wghts['w1']
+	weights2=wghts['w2']
+	weights3=wghts['w3']
+	b1=wghts['b1']
+	b2=wghts['b2']
+	b3=wghts['b3']
+	train_obj=Train_Model2(batchsize,full_pcs_bin_paths, full_pcs_labels_paths,full_pcs_calibs_paths,car_positives,neg,hnm_path,resolution,epochs,\
+	  lr,SGDmomentum,L2weightdecay,N,weights1,weights2,weights3,b1,b2,b3,RFCar,pad,epoch,channels1,channels2,num_filters1,num_filters2, \
+	  x,y,z,fvthresh,wdthresh,batchsizehnm,objects,weights_path,values_path)
+	train_obj.train()
