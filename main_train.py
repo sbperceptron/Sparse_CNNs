@@ -4,6 +4,7 @@ import os
 import torch
 import torch.nn as nn
 import numpy as np
+import argparse
 
 ########################################################################################################
 ########################################################################################################
@@ -44,14 +45,26 @@ hnm_path="./data/crops/train/negative/"+objects+"/hnm/"
 #######################################################
 
 # the network Hyper parameters refer to section V C
-# The control parameters
+# The control parameters parsing from the command line
+ap = argparse.ArgumentParser()
+ap.add_argument("-fv", "--fvthres", required=True,
+	help="The min number of points required to \
+	extract a feature vector")
+ap.add_argument("-wd", "--wdthresh", required=True,
+	help="The min number of features for a window")
+ap.add_argument("-r", "--resolution", required=True,
+	help="The resolution of the voxel in the pointcloud")
+ap.add_argument("-bhnm", "--batchsize_hnm", required=True,
+	help="The hard negative mining batchsize can be a value \
+	close to the the number of cores on the sytem running it")
+args = vars(ap.parse_args())
 ###################################################
-fvthresh=3 #min number of points for feature extraction
-wdthresh=6 # min number of feature vectors per window
+fvthresh=args["fvthresh"] #min number of points for feature extraction
+wdthresh=args["wdthresh"] # min number of feature vectors per window
 #refer to the voting for voting in online pc(Wang and Posner) Section 7 C
-resolution=0.2 
+resolution=args["resolution"] 
 # The hnm batch size
-batchsizehnm=6 # make it equal to the number of cores -2 on the system
+batchsizehnm=args["batchsizehnm"] # make it equal to the number of cores -2 on the system
 ###################################################
 
 # The path where we store the scores and loss values
