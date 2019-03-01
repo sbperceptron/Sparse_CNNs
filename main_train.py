@@ -46,7 +46,7 @@ batchsizehnm=args["batchsize_hnm"] # make it equal to the number of cores -2 on 
 
 ########################################################################################################
 ########################################################################################################
-ip_path=args[input_path]
+ip_path=args["input_path"]
 # paths to 80:20 split data (load the train data)
 pcs_orig=ip_path+"/kittisplit/train/bin/*.bin"
 labels_orig=ip_path+"/kittisplit/train/labels/*.txt"
