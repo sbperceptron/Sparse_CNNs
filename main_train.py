@@ -6,12 +6,51 @@ import torch.nn as nn
 import numpy as np
 import argparse
 
+
+# the network Hyper parameters refer to section V C
+# The control parameters parsing from the command line
+ap = argparse.ArgumentParser()
+ap.add_argument("-f", "--fvthresh",type=int, required=True,
+	help="type [int] \n \
+	[INFO]The min number of points required to \
+	extract a feature vector")
+ap.add_argument("-w", "--wdthresh",type=int, required=True,
+	help="type [int] \n \
+	[INFO] The min number of features for a window")
+ap.add_argument("-res", "--resolution",type=float, required=False,
+	default=0.2,
+	help="type [float][Optional] \n \
+	[INFO] The resolution of the voxel in the pointcloud")
+ap.add_argument("-b", "--batchsize_hnm", required=True,
+	help="type [int] \n \
+	[INFO] The hard negative mining batchsize can be a value \
+	close to the the number of cores on the sytem running it")
+ap.add_argument("-i", "--input_path", required=True,
+	help="type [str] \n \
+	[INFO] The path to the input data folder")
+ap.add_argument("-r", "--resume_train", type=bool, default=False,
+	help="type [True/False] \n \
+	[INFO] if to resume training from a set of available weights ")
+ap.add_argument("-epoch", "--epoch", type=int, required=False,
+	help="type [int] \n \
+	[INFO]The epoch from which to begin the training")
+args = vars(ap.parse_args())
+###################################################
+fvthresh=args["fvthresh"] #min number of points for feature extraction
+wdthresh=args["wdthresh"] # min number of feature vectors per window
+#refer to the voting for voting in online pc(Wang and Posner) Section 7 C
+resolution=args["resolution"] 
+# The hnm batch size
+batchsizehnm=args["batchsize_hnm"] # make it equal to the number of cores -2 on the system
+###################################################
+
 ########################################################################################################
 ########################################################################################################
+ip_path=args[input_path]
 # paths to 80:20 split data (load the train data)
-pcs_orig="./data/kittisplit/train/bin/*.bin"
-labels_orig="./data/kittisplit/train/labels/*.txt"
-calibs_orig="./data/kittisplit/train/calibs/*.txt"
+pcs_orig=ip_path+"/kittisplit/train/bin/*.bin"
+labels_orig=ip_path+"/kittisplit/train/labels/*.txt"
+calibs_orig=ip_path+"/kittisplit/train/calibs/*.txt"
 #######################################################
 
 objects="Pedestrian"#Cyclist Car Pedestrian
@@ -38,51 +77,18 @@ full_pcs_calibs_paths=full_pcs_calibs_paths
 
 # paths to positive and negative crops of the data
 ########################################################
-car_positives="./data/crops/train/positive/"+objects+"/*.bin"
-neg="./data/crops/train/negative/"+objects+"/*.bin"
+car_positives=ip_path+"/crops/train/positive/"+objects+"/*.bin"
+neg=ip_path+"/crops/train/negative/"+objects+"/*.bin"
 # hnm_path
-hnm_path="./data/crops/train/negative/"+objects+"/hnm/"
+hnm_path=ip_path+"/crops/train/negative/"+objects+"/hnm/"
 #######################################################
 
-# the network Hyper parameters refer to section V C
-# The control parameters parsing from the command line
-ap = argparse.ArgumentParser()
-ap.add_argument("-f", "--fvthresh",type=int, required=True,
-	help="type [int] \n \
-	[INFO]The min number of points required to \
-	extract a feature vector")
-ap.add_argument("-w", "--wdthresh",type=int, required=True,
-	help="type [int] \n \
-	[INFO] The min number of features for a window")
-ap.add_argument("-res", "--resolution",type=float, required=False,
-	default=0.2,
-	help="type [float][Optional] \n \
-	[INFO] The resolution of the voxel in the pointcloud")
-ap.add_argument("-b", "--batchsize_hnm", required=True,
-	help="type [int] \n \
-	[INFO] The hard negative mining batchsize can be a value \
-	close to the the number of cores on the sytem running it")
-ap.add_argument("-r", "--resume_train", type=bool, default=False,
-	help="type [True/False] \n \
-	[INFO] if to resume training from a set of available weights ")
-ap.add_argument("-epoch", "--epoch", type=int, required=False,
-	help="type [int] \n \
-	[INFO]The epoch from which to begin the training")
 
-args = vars(ap.parse_args())
-###################################################
-fvthresh=args["fvthresh"] #min number of points for feature extraction
-wdthresh=args["wdthresh"] # min number of feature vectors per window
-#refer to the voting for voting in online pc(Wang and Posner) Section 7 C
-resolution=args["resolution"] 
-# The hnm batch size
-batchsizehnm=args["batchsize_hnm"] # make it equal to the number of cores -2 on the system
-###################################################
 
 # The path where we store the scores and loss values
 ######################################################
 folder=str(fvthresh)+str(wdthresh)
-values_path_dir="./data/crops/lossvalues/Pedestrian/2layer/"+folder+"/"
+values_path_dir=ip_path+"/crops/lossvalues/Pedestrian/2layer/"+folder+"/"
 values_file="scoreserror.txt"
 if not os.path.exists(values_path_dir):
 	os.makedirs(values_path_dir)
