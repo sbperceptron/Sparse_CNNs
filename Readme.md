@@ -1,7 +1,7 @@
-vote3deep master
+# vote3deep master
 
-the input folder should look like
-main
+## the input folder should look like
+### main
   * kittisplit  
     * train  
 	  * bin  

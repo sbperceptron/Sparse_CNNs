@@ -3,10 +3,6 @@ import os,glob
 import shutil
 import multiprocessing as mp
 from models import nn_model2
-#import rospy
-import std_msgs.msg
-import sensor_msgs.point_cloud2 as pc2
-from sensor_msgs.msg import PointCloud2
 import time
 import ntpath
 from readlabels import Read_label_data
