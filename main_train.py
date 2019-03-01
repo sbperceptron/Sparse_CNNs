@@ -47,20 +47,27 @@ hnm_path="./data/crops/train/negative/"+objects+"/hnm/"
 # the network Hyper parameters refer to section V C
 # The control parameters parsing from the command line
 ap = argparse.ArgumentParser()
-ap.add_argument("-fv", "--fvthresh",type=int, required=True,
-	help="The min number of points required to \
+ap.add_argument("-f", "--fvthresh",type=int, required=True,
+	help="type [int] \n \
+	[INFO]The min number of points required to \
 	extract a feature vector")
-ap.add_argument("-wd", "--wdthresh",type=int, required=True,
-	help="The min number of features for a window")
-ap.add_argument("-r", "--resolution",type=float, required=False,
-	default=0.2,help="The resolution of the voxel in the pointcloud")
-ap.add_argument("-bhnm", "--batchsize_hnm", required=True,
-	help="The hard negative mining batchsize can be a value \
+ap.add_argument("-w", "--wdthresh",type=int, required=True,
+	help="type [int] \n \
+	[INFO] The min number of features for a window")
+ap.add_argument("-res", "--resolution",type=float, required=False,
+	default=0.2,
+	help="type [float][Optional] \n \
+	[INFO] The resolution of the voxel in the pointcloud")
+ap.add_argument("-b", "--batchsize_hnm", required=True,
+	help="type [int] \n \
+	[INFO] The hard negative mining batchsize can be a value \
 	close to the the number of cores on the sytem running it")
-ap.add_argument("-resume_train", "--resume_train", type=bool, default=False,
-	help="if to resume training from a set of available weights")
+ap.add_argument("-r", "--resume_train", type=bool, default=False,
+	help="type [True/False] \n \
+	[INFO] if to resume training from a set of available weights ")
 ap.add_argument("-epoch", "--epoch", type=int, required=False,
-	help="The epoch from which to begin the training")
+	help="type [int] \n \
+	[INFO]The epoch from which to begin the training")
 
 args = vars(ap.parse_args())
 ###################################################
