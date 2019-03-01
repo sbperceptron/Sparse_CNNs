@@ -35,6 +35,7 @@ ap.add_argument("-epoch", "--epoch", type=int, required=False,
 	help="type [int] \n \
 	[INFO]The epoch from which to begin the training")
 args = vars(ap.parse_args())
+
 ###################################################
 fvthresh=args["fvthresh"] #min number of points for feature extraction
 wdthresh=args["wdthresh"] # min number of feature vectors per window
@@ -52,10 +53,8 @@ pcs_orig=ip_path+"/kittisplit/train/bin/*.bin"
 labels_orig=ip_path+"/kittisplit/train/labels/*.txt"
 calibs_orig=ip_path+"/kittisplit/train/calibs/*.txt"
 #######################################################
-
 objects="Pedestrian"#Cyclist Car Pedestrian
-#######################################################
-
+######################################################
 #########################################################################################################
 #########################################################################################################
 # the full point cloud and labels files 
@@ -80,38 +79,30 @@ full_pcs_calibs_paths=full_pcs_calibs_paths[:50]
 folder=str(fvthresh)+str(wdthresh)
 car_positives=ip_path+"/crops/train/positive/"+objects+"/*.bin"
 neg=ip_path+"/crops/train/negative/"+objects+"/*.bin"
+# hnmpath,weightspath,lossvalues path
+########################################################
 # hnm_path
 # The path to this will be sepearate for every new 
 # threshold we have.
-hnm_path="./data/hnm_data/"+objects+"/hnm_"+folder+"/"
-if not os.path.exists(hnm_path):
-	os.makedirs(hnm_path)
-#######################################################
-
+hnm_path=ip_path+"/train_data/"+objects+"/2layer/"+folder+"/hnm_data/"
 # The path where we store the scores and loss values
-######################################################
-values_path_dir=ip_path+"/crops/lossvalues/Pedestrian/2layer/"+folder+"/"
+values_path_dir=ip_path+"/train_data/"+objects+"/2layer/"+folder+"/lossvalues/"
 values_file="scoreserror.txt"
+# Weghts path
+weights_path=ip_path+"/train_data/"+objects+"/2layer/"+folder+"/weights/"
+#######################################################
 if not os.path.exists(values_path_dir):
 	os.makedirs(values_path_dir)
-
+if not os.path.exists(hnm_path):
+	os.makedirs(hnm_path)
 ######################################################
 
-# The Factors affecting the speed of processing
+# other factors
 ###################################################
 batchsize=16 # should be kept constant given by paper
-####################################################
-
-# The convergence parameters
-####################################################
 SGDmomentum=0.9 # Stochastic grdient decsent
 L2weightdecay=0.0001
 lr=0.001# learning rate
-#####################################################
-
-# other parameters
-######################################################
-# refer to Section V C
 pad=1
 epochs=100
 filter_size=[3,3,3] # Refer to fig 3 in vote3deep
@@ -136,7 +127,7 @@ if not args["resume_train"]:
 	#####      init the weights and biases based on Delving deep into Rectifiers(He et al.)
 	#####################################################################################################
 	########################################################
-	weights_path="./data/crops/weights/"+objects+"/2layer/"+folder+"/"
+	
 	if not os.path.exists(weights_path):
 		os.makedirs(weights_path)
 	########################################################
@@ -176,7 +167,6 @@ else:
 	####################### IF YOU HAVE PRETRAINED WEIGHTS ################################################
 	####################### READ COMMENT ABOVE, AND COMMENT THE NEXT LINES 
 	####################### Training from a set of known pretrained weights.  #############################
-	weights_path="./data/crops/weights/"+objects+"/2layer/"+folder+"/"
 	epoch=args["epoch"]
 	file_name="epoch_"+str(epoch)+".weights.npz"
 	num_filters1=8 # Refer to fig 3 in vote3deep
