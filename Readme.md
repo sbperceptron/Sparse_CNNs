@@ -2,17 +2,17 @@ vote3deep master
 
 the input folder should look like
 main
-  kittisplit  
-    train  
-	  bin  
-	  labels  
-	  calibs  
-    test  
-	  bin  
-	  labels  
-	  calibs  
+  * kittisplit  
+    * train  
+	  * bin  
+	  * labels  
+	  * calibs  
+    * test  
+	  * bin  
+	  * labels  
+	  * calibs  
 
-  crops  
+  * crops  
     train  
       positive  
         Pedestrian  
