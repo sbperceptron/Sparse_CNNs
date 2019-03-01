@@ -70,24 +70,26 @@ full_pcs_bin_paths.sort()
 full_pcs_labels_paths.sort()
 full_pcs_calibs_paths.sort()
 
-full_pcs_bin_paths=full_pcs_bin_paths
-full_pcs_labels_paths=full_pcs_labels_paths
-full_pcs_calibs_paths=full_pcs_calibs_paths
+full_pcs_bin_paths=full_pcs_bin_paths[:50]
+full_pcs_labels_paths=full_pcs_labels_paths[:50]
+full_pcs_calibs_paths=full_pcs_calibs_paths[:50]
 ########################################################
 
 # paths to positive and negative crops of the data
 ########################################################
+folder=str(fvthresh)+str(wdthresh)
 car_positives=ip_path+"/crops/train/positive/"+objects+"/*.bin"
 neg=ip_path+"/crops/train/negative/"+objects+"/*.bin"
 # hnm_path
-hnm_path=ip_path+"/crops/train/negative/"+objects+"/hnm/"
+# The path to this will be sepearate for every new 
+# threshold we have.
+hnm_path="./data/hnm_data/"+objects+"/hnm_"+folder+"/"
+if not os.path.exists(hnm_path):
+	os.makedirs(hnm_path)
 #######################################################
-
-
 
 # The path where we store the scores and loss values
 ######################################################
-folder=str(fvthresh)+str(wdthresh)
 values_path_dir=ip_path+"/crops/lossvalues/Pedestrian/2layer/"+folder+"/"
 values_file="scoreserror.txt"
 if not os.path.exists(values_path_dir):
