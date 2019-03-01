@@ -86,13 +86,7 @@ values_path_dir="./data/crops/lossvalues/Pedestrian/2layer/"+folder+"/"
 values_file="scoreserror.txt"
 if not os.path.exists(values_path_dir):
 	os.makedirs(values_path_dir)
-if os.path.exists(values_path_dir+values_file):
-		ip=raw_input("Do you want to append to the list[Y/n]: ")
-		if ip=="N" or ip=="n":
-			os.remove(values_path_dir+values_file)
-			print("File Removed!")
 
-values_path=values_path_dir+values_file
 ######################################################
 
 # The Factors affecting the speed of processing
@@ -123,6 +117,11 @@ z=(-2.5, 1.5)
 ######################################################
 
 if not args["resume_train"]:
+	# remove the old scoreerror values if exist
+	if os.path.exists(values_path_dir+values_file):
+		os.remove(values_path_dir+values_file)
+		print("File Removed!")
+	values_path=values_path_dir+values_file
 	#####################################################################################################
 	#####################################################################################################
 	################################# No pretrained weights #############################################
@@ -163,6 +162,8 @@ if not args["resume_train"]:
 	train_obj.train()
 
 else:
+	# if scoreerror file already exist append to it
+	values_path=values_path_dir+values_file
 	#######################################################################################################
 	####################### IF YOU HAVE PRETRAINED WEIGHTS ################################################
 	####################### READ COMMENT ABOVE, AND COMMENT THE NEXT LINES 
