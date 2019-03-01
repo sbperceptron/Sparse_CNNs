@@ -13,22 +13,22 @@ main
 	  * calibs  
 
   * crops  
-    train  
-      positive  
-        Pedestrian  
-	  negative  
-        Pedestrian  
-    test  
-      positive  
-        Pedestrian  
-      split  
-        positive  
-          Pedestrian  
-            Easy  
-            Medium  
-            Hard  
-        negative  
-          Pedestrian  
-            Easy  
-            Medium  
-            Hard  
+    * train  
+      * positive  
+        * Pedestrian  
+	  * negative  
+        * Pedestrian  
+    * test  
+      * positive  
+        * Pedestrian  
+      * split  
+        * positive  
+          * Pedestrian  
+            * Easy  
+            * Medium  
+            * Hard  
+        * negative  
+          * Pedestrian  
+            * Easy  
+            * Medium  
+            * Hard  
