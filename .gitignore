@@ -1,2 +1,4 @@
+*.log
+save_pid*.txt
 *.pyc
 data/crops/
