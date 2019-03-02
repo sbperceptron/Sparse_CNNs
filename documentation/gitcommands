@@ -1,0 +1,57 @@
+
+# for new reps
+git init
+git add .
+git commit -m "message"
+git push remote origin the remote rep url
+git remote -v
+git push origin master
+
+# creating a branch
+git checkout -b branchname
+
+# changing the branch on which we are working
+git checkout branchname
+
+# pushing on to branch
+git push origin branch
+
+# for seeing all the branches
+git branch
+
+# deleting a branch 
+git branch -d branchname
+
+# force deletion 
+git branch -D branchname
+
+# deleting on github
+git push origin : branchname
+
+# for renaming the remote origin branch name
+# deleting the old one and inserting the new one
+git push origin :old-name new-name
+# for resetting the branch
+git push origin -u new-name
+
+# for listing the remote origins for the rep
+git remote -v
+
+# for renaming the remote name
+git remote rename old_name new_name
+
+# for changing the remotes url
+git remote set-url origin https://github.com/USERNAME/REPOSITORY.git
+
+replace the 
+https://gogs.mines.edu/sb_pereceptron/3D_Sparse_CNN.git
+
+if you have moved the repo to a different folder and update the changes from there 
+git init
+git add --all
+git commit -am "re-init"
+git remote add origin https://github.com/{yourgit}/{yourproject}.git
+git push --force origin master
+
+For setting the passwords and usesrname for the repository
+git config credential.helper store
