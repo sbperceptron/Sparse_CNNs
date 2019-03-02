@@ -21,7 +21,7 @@ ap.add_argument("-res", "--resolution",type=float, required=False,
 	default=0.2,
 	help="type [float][Optional] \n \
 	[INFO] The resolution of the voxel in the pointcloud")
-ap.add_argument("-b", "--batchsize_hnm", required=True,
+ap.add_argument("-b", "--batchsize_hnm",type=int , required=True,
 	help="type [int] \n \
 	[INFO] The hard negative mining batchsize can be a value \
 	close to the the number of cores on the sytem running it")
@@ -69,9 +69,10 @@ full_pcs_bin_paths.sort()
 full_pcs_labels_paths.sort()
 full_pcs_calibs_paths.sort()
 
-full_pcs_bin_paths=full_pcs_bin_paths[:50]
-full_pcs_labels_paths=full_pcs_labels_paths[:50]
-full_pcs_calibs_paths=full_pcs_calibs_paths[:50]
+full_pcs_bin_paths=full_pcs_bin_paths
+full_pcs_labels_paths=full_pcs_labels_paths
+full_pcs_calibs_paths=full_pcs_calibs_paths
+
 ########################################################
 
 # paths to positive and negative crops of the data

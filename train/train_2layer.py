@@ -60,7 +60,6 @@ class Train_Model2(object):
 		full_pcs_calibs_paths=self.full_pcs_calibs_paths
 		car_positives=self.car_positives
 		neg=self.neg 
-		neg_root=self.neg_root
 		resolution=self.resolution
 		epochs=self.epochs
 		lr=self.lr
@@ -109,11 +108,11 @@ class Train_Model2(object):
 				# remove the old hnm directory
 				if os.path.exists(self.neg_root):
 					os.rmdir(self.neg_root)
-				else:
-					os.makedirs(self.neg_root)
+				# create the new hard negative mining folder
+				os.makedirs(self.neg_root)
 
 				hnm_obj=HNM(weights1,weights2,weights3,b1,b2,b3,full_pcs_bin_paths, 
-				full_pcs_labels_paths,full_pcs_calibs_paths,neg_root,resolution,
+				full_pcs_labels_paths,full_pcs_calibs_paths,self.neg_root,resolution,
 				RFCar,x,y,z,fvthresh,wdthresh,batchsizehnm,self.objects)
 				FPcount=hnm_obj.hnm()
 				

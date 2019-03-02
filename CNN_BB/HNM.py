@@ -198,7 +198,7 @@ class HNM:
 				ind1+=1
 			return FVS_array
 		else:
-			return None
+			return None,None
 
 	'''Function to convert window array to window dictionary'''
 	def window_array_to_dict(self,window):
@@ -243,17 +243,17 @@ class HNM:
 			# also skip the computation if the minimum number of binary occupancy values 
 			# in the window is not met
 			windowloc= np.where(window[:,:,:,5]==1)
+			
 			if len(windowloc[0])<self.wdthresh:
 				continue
 			window=self.window_array_to_dict(window)
 			signal=True
-
+			count+=1
 			work.append([window,-1,weights1,weights2,weights3,b1,b2,b3,self.RFCar,signal,self.ch1,self.ch2,self.f1,self.f2])
 			location.append(i)
-			count+=1
 			# subjecting each window to the trained model
 			# collecting samples for multi processing
-			if count==self.batchsize:
+			if count%self.batchsize==0:
 				pool=mp.Pool(processes=self.batchsize)
 				results=pool.map(nn_model2,work) # nn function in the begining of file
 				pool.close()
@@ -348,8 +348,11 @@ class HNM:
 
 			grid=self.raw_to_grid(pc)
 			FVS=self.grid_to_FVS(grid)
+			
 			scores,locations=self.score_values(FVS,label)
+
 			top10sc,top10loc=self.findtop10(scores,locations)
+
 			##################################################################################
 			# since we do sparse convolution all the cells in the grid that have a 
 			# chance of a car being present will be given high votes
