@@ -112,7 +112,7 @@ class Feature_extractor:
 				ind1+=1
 			return FVS,counter
 		else:
-			return None
+			return None,None
 
 	
 

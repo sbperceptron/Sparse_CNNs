@@ -156,6 +156,8 @@ class Train_Model2(object):
 					s=False
 					work.append([i,j,weights1,weights2,weights3,b1,b2,b3,RFCar,s,ch1,ch2,f1,f2])
 					# nn_model2([i,j,weights1,weights2,weights3,b1,b2,b3,RFCar,s,ch1,ch2,f1,f2])
+				if len(work)==0:
+					continue
 				# calls the batch fed function in batch generator
 				################################################################################
 					# Passing the input to neural network model
