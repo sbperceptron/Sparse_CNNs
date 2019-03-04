@@ -107,7 +107,7 @@ lr=0.001# learning rate
 pad=1
 epochs=100
 filter_size=[3,3,3] # Refer to fig 3 in vote3deep
-RFCar=[int(2.0/0.2),int(1.0/0.2),int(2.0/0.2)] # # pedestrian
+RFCar=[int(2.0/0.2),int(2.0/0.2),int(2.0/0.2)] # # pedestrian
 # 95 percentile Receptive field size of the object (Refer to Section 3)
 # RFCar=[int(2.0/0.2),int(1.0/0.2),int(2.0/0.2)] # cyclist
 N=8 # angular bins in 360/45

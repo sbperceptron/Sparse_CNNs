@@ -97,9 +97,10 @@ class Train_Model2(object):
 		previous_b2_grad=0
 		previous_b3_grad=0
 
+
 		# remove the old hard negative mining directory
 		if os.path.exists(self.neg_root):
-			os.rmdir(self.neg_root)
+			shutil.rmtree(self.neg_root)
 
 		for epoch in range(curr_epoch, epochs):
 
@@ -107,7 +108,7 @@ class Train_Model2(object):
 			if (epoch+1) %10 == 0 and epoch != 0:
 				# remove the old hnm directory
 				if os.path.exists(self.neg_root):
-					os.rmdir(self.neg_root)
+					shutil.rmtree(self.neg_root)
 				# create the new hard negative mining folder
 				os.makedirs(self.neg_root)
 

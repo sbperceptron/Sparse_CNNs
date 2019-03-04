@@ -187,31 +187,27 @@ class HNM:
 					i_mean_cell=(np.mean(data[index[ind0]:index[ind1]][:,6])).astype(np.float16)
 					i_variance_cell=(np.var(data[index[ind0]:index[ind1]][:,6])).astype(np.float16)
 
-					coordTuple = (unique[i][0], unique[i][1], unique[i][2])
-
-					FVS[coordTuple]=[CL,CP,CS,i_mean_cell,i_variance_cell,1]
-
-					
 					FVS_array[unique[i][0],unique[i][1],unique[i][2],:]=[CL,CP,CS,i_mean_cell,i_variance_cell,1]
-					# print CL,CP,CS,i_mean_cell,i_variance_cell,1
 				ind0+=1
 				ind1+=1
 			return FVS_array
 		else:
-			return None,None
+			return None
 
 	'''Function to convert window array to window dictionary'''
 	def window_array_to_dict(self,window):
 		# we need the xyz values of each feature vector in the FVS space
-		FVS_dict=dict()
+		FVS=dict()
 		loc=np.where(window[:,:,:,5]==1)
 		loc=np.hstack((np.array(loc[0]).reshape(-1,1),
 			np.array(loc[1]).reshape(-1,1),
 			np.array(loc[2]).reshape(-1,1)))
 		loc=loc.tolist()
 		for i in loc:
-			FVS_dict[str(i[0])+" "+str(i[1])+" "+str(i[2])]=window[i[0],i[1],i[2],:]
-		return FVS_dict
+			coordTuple = (i[0], i[1], i[2])
+			FVS[coordTuple]=window[i[0],i[1],i[2],:]
+			# FVS_dict[str(i[0])+" "+str(i[1])+" "+str(i[2])]=window[i[0],i[1],i[2],:]
+		return FVS
 
 	'''from the FVS calicluate the score values of the input point cloud'''
 	def score_values(self,FVS,label):
@@ -225,6 +221,7 @@ class HNM:
 		# instead of looping over the entire of the input
 		# look at the locations where we have feature descriptors
 		loc=np.where(FVS[:,:,:,5]==1)
+
 		print("\t Number of windows(equal to number of features):",len(loc[0]))
 		loc=np.hstack((np.array(loc[0]).reshape(-1,1),
 			np.array(loc[1]).reshape(-1,1),
@@ -235,6 +232,7 @@ class HNM:
 		location=[]
 		score_values=[]
 		locations=[]
+
 		for i in loc:
 			# for each window caliculating the score value
 			window=FVS[i[0]-int(windowsize[0]/2):i[0] + int(windowsize[0]/2), 
@@ -251,6 +249,7 @@ class HNM:
 			count+=1
 			work.append([window,-1,weights1,weights2,weights3,b1,b2,b3,self.RFCar,signal,self.ch1,self.ch2,self.f1,self.f2])
 			location.append(i)
+			# ##########################
 			# subjecting each window to the trained model
 			# collecting samples for multi processing
 			if count%self.batchsize==0:
@@ -260,7 +259,7 @@ class HNM:
 				pool.join()
 				# saving the score values
 				results=np.array(results)
-				for i,result in enumerate(results[:,1]):
+				for i,result in enumerate(results[:,0]):
 					score_values.append(result)
 					locations.append(location[i])
 				# emptying the work, locations and count values for processing next batch
@@ -357,7 +356,7 @@ class HNM:
 			# since we do sparse convolution all the cells in the grid that have a 
 			# chance of a car being present will be given high votes
 			for i,loc in enumerate(top10loc):
-				if top10sc[i]<0:
+				if top10sc[i]<=0:
 					continue
 				xbound,ybound,zbound=self.bounding_box(loc)
 				crop=self.crop_pc_data(pc_bin,xbound,ybound,zbound)
