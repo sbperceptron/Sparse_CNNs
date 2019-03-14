@@ -6,6 +6,8 @@ num_goodGT_crops=0
 from itertools import chain
 
 '''The positive crops are cropped according to 95 percentile object size of the dataset'''
+# TODO: in the code below here,  if else has redundancy
+# also get rid of the argument signal for this function 
 def new_range(range_object,objsz,signal):
 	
 	# the object size is of the format of height width and length 
@@ -29,6 +31,8 @@ def new_range(range_object,objsz,signal):
 		return range_object
 
 '''for each label the object is cropped from the original pc'''
+# TODO: include the code to transform the crops into a local frame
+# of reference.
 def create_positives(to_crop, maps, obj_size, signal):
 	crops=[]
 	for key in maps.keys():
@@ -60,8 +64,7 @@ dirs_labels-> the path to whre the final labels will be stored
 objsizes-> the size of each positive crop '''
 
 def create_positive_dataset(pths, root, dirs_crops,objssizes):
-
-	iterations=len(pths)/3
+	iterations=len(pths)/3 # divide with the number of objects
 	count=0
 	zeroloc=0
 
@@ -88,7 +91,7 @@ def create_positive_dataset(pths, root, dirs_crops,objssizes):
 			label_type="txt"
 			# For each and every object in the point cloud the label information 
 			final_label= read_labels(j, label_type, calib_path=calib, is_velo_cam=True, proj_velo=proj_velo)
-			objectsranges=object_ranges(final_label)
+			objectsranges=object_ranges(final_label)# get the object coordinate ranges
 			# create positives
 			if not objectsranges == None:
 				if objectsranges['carranges'] != None:

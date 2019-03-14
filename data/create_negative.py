@@ -22,6 +22,7 @@ def check(r, ranges):
 			#print boolop
 	return boolop
 
+
 def create_negatives_split(to_crop, ranges, cropsize, size1=None, size2=None,emh=None):
 	count=1
 	numpoints_counted=0
@@ -29,11 +30,15 @@ def create_negatives_split(to_crop, ranges, cropsize, size1=None, size2=None,emh
 	while count  > 0:
 		point=to_crop[random.randint(0,len(to_crop)-1)]
 		numpoints_counted+=1
+		# TODO: take the point as the center of the crop rather than one extemity
 		range_object1=np.array([point[:3], point[:3]+cropsize]).ravel()
 		r=[range_object1[0],range_object1[3], range_object1[1], range_object1[4], range_object1[2], range_object1[5]]
 		bl=check(r,ranges)
 		if bl == False:
 			crop=crop_object_from_pc_data(to_crop,r, signal2='crop')
+			# emh denotes the easy ,medium and hard classes
+			# the size1,size2 and size3 indicate the theshold number of points 
+			# for the respective classes
 			if emh==1:
 				if crop.shape[0] > size1:
 					crops=crop
@@ -80,6 +85,8 @@ def create_negatives(to_crop, ranges, cropsize):
 	return crops
  
 '''function to create negative crops equal to the number of positive crops'''
+# TODO: why do we have the size1,size2,signal,emh argumnets for this functions
+# get rid if they are redundant
 def object_crops(pths,number_objects,objsize,code,size1=None, size2=None,signal=False,emh=None):
 	# since the object size is in the format height width and length we will change that to
 	# length, width and height format first before passing

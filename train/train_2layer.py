@@ -85,9 +85,7 @@ class Train_Model2(object):
 		fvthresh=self.fvthresh
 		wdthresh=self.wdthresh
 		batchsizehnm=self.batchsizehnm
-
 		FPcount=0
-
 		num_batches=0
 		telapsed=0
 		previous_w1_grad=0
@@ -96,7 +94,6 @@ class Train_Model2(object):
 		previous_b1_grad=0
 		previous_b2_grad=0
 		previous_b3_grad=0
-
 
 		# remove the old hard negative mining directory
 		if os.path.exists(self.neg_root):
