@@ -35,7 +35,10 @@ ap.add_argument("-epoch", "--epoch", type=int, required=False,
 	help="type [int] \n \
 	[INFO]The epoch from which to begin the training")
 args = vars(ap.parse_args())
+# include a cfg file in the folder where the weights are stored. If the cfg present 
+# load the parameters from this file and resume the training from here
 
+# Also include a argument for the working directory. where we store the weights,cfg,etc.
 ###################################################
 fvthresh=args["fvthresh"] #min number of points for feature extraction
 wdthresh=args["wdthresh"] # min number of feature vectors per window
