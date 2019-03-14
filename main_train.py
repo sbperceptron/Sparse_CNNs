@@ -72,9 +72,9 @@ full_pcs_bin_paths.sort()
 full_pcs_labels_paths.sort()
 full_pcs_calibs_paths.sort()
 
-full_pcs_bin_paths=full_pcs_bin_paths
-full_pcs_labels_paths=full_pcs_labels_paths
-full_pcs_calibs_paths=full_pcs_calibs_paths
+# full_pcs_bin_paths=full_pcs_bin_paths
+# full_pcs_labels_paths=full_pcs_labels_paths
+# full_pcs_calibs_paths=full_pcs_calibs_paths
 
 ########################################################
 
