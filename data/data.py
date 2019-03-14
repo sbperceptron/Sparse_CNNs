@@ -37,7 +37,7 @@ def test_train_split(train_size, test_size, lidar_path, label_path, calib_path):
 
 if __name__== '__main__':
 	train_size=0.80
-	test_size=0.20
+	test_size=1-train_size
 	# THE DOWNALOADED KITTI DATASET
 	lidar_path="/home/saichand/3D_CNN/KITTI/data_object_velodyne/training/velodyne/*.bin"# LOADING ORIGINAL lidar FILES
 	label_path="/home/saichand/3D_CNN/KITTI/label_2/*.txt"# LOADING ORIGINAL LABEL FILES
