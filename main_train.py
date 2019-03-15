@@ -19,23 +19,7 @@ import torch
 import torch.nn as nn
 
 from train import Train_Model2
-
-def load_and_sort_paths(pathname):
-    '''
-      Performs Unix-style path expansion, returning a sorted list
-      of paths to files that meet the pathname criteria.
-      The argument pathname can be absolute or relative.
-
-      e.g.
-        pathname="/local/home/user/*.txt"
-        load_and_sort_paths(pathname)
-
-        # Returns all files with extension 'txt'
-        # in the /local/home/user directory
-    '''
-    pathname_expansion = glob.glob(pathname)
-    pathname_expansion.sort()
-    return pathname_expansion
+from helper import load_and_sort_paths
 
 
 # the network Hyper parameters refer to section V C
