@@ -117,13 +117,12 @@ class Train_Model2(object):
 
 			# Read in the positive and negatives
 			# positive and negative pcs
-			pos_velodynes_path=car_positives
-			neg_velodynes_path =glob.glob(neg)
-			pos_velodynes_path = glob.glob(pos_velodynes_path)
+			pos_velodynes_path = glob.glob(car_positives)
 			pos_velodynes_path.sort()
+			neg_velodynes_path = glob.glob(neg)
 			neg_velodynes_path.sort()
-			pos_velodynes_path=pos_velodynes_path
-			neg_velodynes_path=neg_velodynes_path
+			# pos_velodynes_path=pos_velodynes_path[:10]
+			# neg_velodynes_path=neg_velodynes_path[:10]
 
 			# positive and negative labels
 			pos_labels=[1 for i in range(0,len(pos_velodynes_path))]
@@ -162,7 +161,7 @@ class Train_Model2(object):
 				##################################################################################
 				# USing POOL
 				##################################################################################
-				pool=mp.Pool(processes=8)
+				pool=mp.Pool(processes=self.batchsize)
 				results=pool.map(nn_model2,work) # nn function in the begining of file
 				pool.close()
 				pool.join()
@@ -198,6 +197,8 @@ class Train_Model2(object):
 
 				# updating the weights
 				# happens for every batch (size of 16)
+				# TODO: write a function that we can use repeatedly for caliculating the gradients
+				# below
 				################################################################################
 				##############              weights1            ################################
 				print("        Previous weights Average (W1):",np.average(weights1))
@@ -218,15 +219,15 @@ class Train_Model2(object):
 				################################################################################
 				##############              bias1            ###################################
 				sgd_mom_b1=((lr * (b_grads_1+(2*L2weightdecay*b1)))+(SGDmomentum*previous_b1_grad))
-				b1= b1 - sgd_mom_b1
+				b1=np.where(b1-sgd_mom_b1<0,b1-sgd_mom_b1,b1)
 				################################################################################
 				##############              bias2            ###################################
 				sgd_mom_b2=((lr * (b_grads_2+(2*L2weightdecay*b2)))+(SGDmomentum*previous_b2_grad))
-				b2= b2 - sgd_mom_b2
+				b2= np.where(b2-sgd_mom_b2<0,b2-sgd_mom_b2,b2)
 				################################################################################
 				##############              bias3            ###################################
 				sgd_mom_b3=((lr * (b_grads_3+(2*L2weightdecay*b3)))+(SGDmomentum*previous_b3_grad))
-				b3= b3 - sgd_mom_b3
+				b3=np.where(b3-sgd_mom_b3<0,b3-sgd_mom_b3,b3)
 
 				previous_w1_grad=sgd_mom_w1
 				previous_w2_grad=sgd_mom_w2
@@ -234,18 +235,6 @@ class Train_Model2(object):
 				previous_b1_grad=sgd_mom_b1
 				previous_b2_grad=sgd_mom_b2
 				previous_b3_grad=sgd_mom_b3
-
-				# making sure the bias values are non positive
-				for i,b_1 in enumerate(b1):
-					if b_1 > 0:
-						b1[i]=0
-
-				for j,b_2 in enumerate(b2):
-					if b_2 > 0:
-						b2[j]=0
-
-				if b3 > 0:
-					b3=0
 
 				end_time=time.time()
 				print("         Time elapsed for processing a Batch:",np.round((end_time-start_time),2))
