@@ -18,6 +18,7 @@ from create_negative import *
 
 '''the function takes in the original paths to the bin, label and calib files to output the train and test datasets 
 (80:20 split)''' 
+# TODO: remove the testsize redundant parameter in this function
 def test_train_split(train_size, test_size, lidar_path, label_path, calib_path):
 	lidars=glob.glob(lidar_path)
 	labels=glob.glob(label_path)
@@ -37,7 +38,7 @@ def test_train_split(train_size, test_size, lidar_path, label_path, calib_path):
 
 if __name__== '__main__':
 	train_size=0.80
-	test_size=0.20
+	test_size=1-train_size
 	# THE DOWNALOADED KITTI DATASET
 	lidar_path="/home/saichand/3D_CNN/KITTI/data_object_velodyne/training/velodyne/*.bin"# LOADING ORIGINAL lidar FILES
 	label_path="/home/saichand/3D_CNN/KITTI/label_2/*.txt"# LOADING ORIGINAL LABEL FILES
@@ -52,7 +53,8 @@ if __name__== '__main__':
 	
 
 	# Step1: Splitting the original data into train, test sets (80:20)
-	train_lidars_orig, test_lidars_orig, train_labels_orig, test_labels_orig, train_calib_orig, test_calib_orig= test_train_split(train_size, test_size, lidar_path, label_path, calib_path)
+	train_lidars_orig, test_lidars_orig, train_labels_orig, test_labels_orig, 
+	train_calib_orig, test_calib_orig= test_train_split(train_size, test_size, lidar_path, label_path, calib_path)
 	##############################################################################################################################
 	# Step2: Creating the positive and negative crops from full point cloud files using the label information
 	# firstly creating the folder hierarchy if it doesnt exist
@@ -63,34 +65,22 @@ if __name__== '__main__':
 		print(orig_dirs1)
 		to_write=create_dict(orig_dirs1,pths1)
 		write_to_file(to_write)
-		train_lidars=glob.glob(root+"/train/bin/*.bin")
-		train_labels=glob.glob(root+"/train/labels/*.txt")
-		train_calibs=glob.glob(root+"/train/calibs/*.txt")
-		test_lidars=glob.glob(root+"/test/bin/*.bin")
-		test_labels=glob.glob(root+"/test/labels/*.txt")
-		test_calibs=glob.glob(root+"/test/calibs/*.txt")
-		train_lidars.sort()
-		train_labels.sort()
-		train_calibs.sort()
-		test_lidars.sort()
-		test_labels.sort()
-		test_calibs.sort()
+		
 
 
-	# if exists load the bin, label and calib files of the dataset 
-	else:
-		train_lidars=glob.glob(root+"/train/bin/*.bin")
-		train_labels=glob.glob(root+"/train/labels/*.txt")
-		train_calibs=glob.glob(root+"/train/calibs/*.txt")
-		test_lidars=glob.glob(root+"/test/bin/*.bin")
-		test_labels=glob.glob(root+"/test/labels/*.txt")
-		test_calibs=glob.glob(root+"/test/calibs/*.txt")
-		train_lidars.sort()
-		train_labels.sort()
-		train_calibs.sort()
-		test_lidars.sort()
-		test_labels.sort()
-		test_calibs.sort()
+	# load the bin, label and calib files of the dataset 
+	train_lidars=glob.glob(root+"/train/bin/*.bin")
+	train_labels=glob.glob(root+"/train/labels/*.txt")
+	train_calibs=glob.glob(root+"/train/calibs/*.txt")
+	test_lidars=glob.glob(root+"/test/bin/*.bin")
+	test_labels=glob.glob(root+"/test/labels/*.txt")
+	test_calibs=glob.glob(root+"/test/calibs/*.txt")
+	train_lidars.sort()
+	train_labels.sort()
+	train_calibs.sort()
+	test_lidars.sort()
+	test_labels.sort()
+	test_calibs.sort()
 	
 	# checking if the file folders created are empty 
 	if  len(train_lidars) == 0 or len(train_labels) == 0 or len(test_lidars) == 0  or len(test_labels) == 0\

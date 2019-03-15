@@ -111,7 +111,7 @@ def crops_to_file_test(crops, dirs, keys1, keys2, keys3, signal):
 '''given the point cloud and the min and max extrwemes of the point cloud 
 return the cropped point cloud'''
 def crop_object_from_pc_data(pc,r, signal2):
-	"""Given the rgbd data, and object bounding box. Crop the rgbd and return the object pointcloud
+	"""Given the Lidar data, and object bounding box. Crop the Lidar and return the object pointcloud
 	free of other points except for the object"""
 	pc_object=pc
 	x_range=(r[0] , r[1])

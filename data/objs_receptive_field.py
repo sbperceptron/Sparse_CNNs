@@ -41,7 +41,6 @@ def find_object_sizes(labels, calibs,root):
 		calib = read_calib_file(j)
 		proj_velo = proj_to_velo(calib)[:, :3]
 		label_type="txt"
-		
 		final_label= read_labels(i, label_type, calib_path=calib, is_velo_cam=True, proj_velo=proj_velo)
 		objssizes=getobjssizes(final_label)
 		# print type(objssizes['carsizes'])
