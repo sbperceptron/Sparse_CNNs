@@ -43,7 +43,9 @@ class Batch_Generator:
 			for pc_name, label in zip(velodynes[itr*self.batch_size:(itr+1)*self.batch_size],
 				labels[itr*self.batch_size:(itr+1)*self.batch_size]):
 				start_time=time.time()
-
+				# TODO: add the resolution to the init of the  class
+				# TODO: discuss on way to make a common class for feature extractor we can use
+				# for both HNM ,Train and Test.
 				fvs=Feature_extractor(pc_name,self.RFCar,dtype="bin",resolution=0.20,
 					fvthresh=self.fvthresh)
 				FVS,counter=fvs.feature_extractor()

@@ -128,18 +128,10 @@ class HNM:
 		# print "pc:",pointcloud.shape
 
 		for i in pointcloud:
-			xBin = ((i[0] - x[0])/resolution).astype(np.int32)
-			yBin = ((i[1] - y[0])/resolution).astype(np.int32)
-			zBin = ((i[2] - z[0])/resolution).astype(np.int32)
-			if (xBin==0):
-				xBin=1
-
-			if (yBin==0):
-				yBin=1
-
-			if (zBin==0):
-				zBin=1
-
+			xBin = ((i[0] - x[0])/resolution).astype(np.int32)+1
+			yBin = ((i[1] - y[0])/resolution).astype(np.int32)+1
+			zBin = ((i[2] - z[0])/resolution).astype(np.int32)+1
+			
 			arr= [xBin,yBin,zBin,i[0],i[1], i[2], i[3]]
 			data.append(arr)
 		
@@ -154,21 +146,23 @@ class HNM:
 		z=self.z
 		RFCar=self.RFCar
 		resolution=self.resolution
-		FVS_array=np.zeros((int((x[1]-x[0])/0.2),int((y[1]-y[0])/0.2),int((z[1]-z[0])/0.2),6))
+		FVS_array=np.zeros((int((x[1]-x[0])/resolution),int((y[1]-y[0])/resolution),int((z[1]-z[0])/resolution),self.ch1))
 		if data.shape[0] > 2:
 			unique,index,inverse,counts=np.unique(data[:,:3],axis=0,return_index=True,return_inverse=True,return_counts=True)
-			grid_cells_features=np.zeros((len(unique)-1,6))
-			unique=unique[0:len(unique)].astype(int)
+			# grid_cells_features=np.zeros((len(unique)-1,6))
+			unique=unique.astype(int)
 			l=len(unique)
 			FVS=dict()
-			ind0=0
-			ind1=1
+			
 			intensity_mean=[]
 			intensity_var=[]
 			for i in range (0,l-1):
+				ind0=i 
+				ind1=i+1
 				xvalues=data[index[ind0]:index[ind1]][:,3]
 				yvalues=data[index[ind0]:index[ind1]][:,4]
 				zvalues=data[index[ind0]:index[ind1]][:,5]
+				ivalues=data[index[ind0]:index[ind1]][:,6]
 				X=np.stack((xvalues,yvalues,zvalues), axis=0)
 				if X.shape[1]>= self.fvthresh:
 					covariance=np.cov(X)
@@ -184,12 +178,11 @@ class HNM:
 					CP=(2*(eigenvalues[1]-eigenvalues[2])/(3*eigenmean)).astype(np.float16)
 					CS=(eigenvalues[2]/eigenmean).astype(np.float16)
 					
-					i_mean_cell=(np.mean(data[index[ind0]:index[ind1]][:,6])).astype(np.float16)
-					i_variance_cell=(np.var(data[index[ind0]:index[ind1]][:,6])).astype(np.float16)
+					i_mean_cell=(np.mean(ivalues)).astype(np.float16)
+					i_variance_cell=(np.var(ivalues)).astype(np.float16)
 
 					FVS_array[unique[i][0],unique[i][1],unique[i][2],:]=[CL,CP,CS,i_mean_cell,i_variance_cell,1]
-				ind0+=1
-				ind1+=1
+	
 			return FVS_array
 		else:
 			return None
@@ -235,6 +228,7 @@ class HNM:
 
 		for i in loc:
 			# for each window caliculating the score value
+			# TODO: agree on a formula to avoid warping space
 			window=FVS[i[0]-int(windowsize[0]/2):i[0] + int(windowsize[0]/2), 
 			i[1]-int(windowsize[1]/2):i[1] + int(windowsize[1]/2),
 			i[2] -int(windowsize[2]/2):i[2] + int(windowsize[2]/2),:]
@@ -247,11 +241,16 @@ class HNM:
 			window=self.window_array_to_dict(window)
 			signal=True
 			count+=1
+			# TODO: rename the signal to some variable name that can speak for itself.
 			work.append([window,-1,weights1,weights2,weights3,b1,b2,b3,self.RFCar,signal,self.ch1,self.ch2,self.f1,self.f2])
 			location.append(i)
 			# ##########################
 			# subjecting each window to the trained model
 			# collecting samples for multi processing
+
+			# TODO: Check if we Can completely ignore how the multiprocessing 
+			# process the data and return the results when we are making a call to it. 
+
 			if count%self.batchsize==0:
 				pool=mp.Pool(processes=self.batchsize)
 				results=pool.map(nn_model2,work) # nn function in the begining of file
@@ -270,7 +269,8 @@ class HNM:
 
 	"""to find the top 10 score values"""
 	def findtop10(self,scores,locations):
-		topn_id=sorted(range(len(scores)), key=lambda i: scores[i])[-10:]
+		sorted_scores_id=sorted(range(len(scores)), key=lambda i: scores[i])
+		topn_id=sorted_scores_id[-10:]
 		# the locations of those top n
 		locations=[locations[i] for i in topn_id]
 		scores=[scores[i] for i in topn_id]
@@ -361,7 +361,7 @@ class HNM:
 				xbound,ybound,zbound=self.bounding_box(loc)
 				crop=self.crop_pc_data(pc_bin,xbound,ybound,zbound)
 				count+=1
-				print("\t The shape of the crop " +str(crop.shape)+" and the score "+str(top10sc[i]))
+				print("\t The shape of the crop " +str(crop.shape)+" and the lossvalue "+str(top10sc[i]))
 				self.crops_to_file(crop,self.neg_root,count)
 			end=time.time()
 			print("\t Time Taken for processing a Pointcloud:", np.round((end-start),2))

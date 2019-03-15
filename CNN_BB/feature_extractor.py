@@ -41,17 +41,10 @@ class Feature_extractor:
 		# print "pc:",pointcloud.shape
 
 		for i in pointcloud:
-			xBin = ((i[0] - x[0])/resolution).astype(np.int32)
-			yBin = ((i[1] - y[0])/resolution).astype(np.int32)
-			zBin = ((i[2] - z[0])/resolution).astype(np.int32)
-			if (xBin==0):
-				xBin=1
-
-			if (yBin==0):
-				yBin=1
-
-			if (zBin==0):
-				zBin=1
+			xBin = ((i[0] - x[0])/resolution).astype(np.int32)+1
+			yBin = ((i[1] - y[0])/resolution).astype(np.int32)+1
+			zBin = ((i[2] - z[0])/resolution).astype(np.int32)+1
+			
 
 			arr= [xBin,yBin,zBin,i[0],i[1], i[2], i[3]]
 			data.append(arr)
