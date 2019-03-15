@@ -5,7 +5,7 @@ import time
 import numpy as np
 from .non_zerofvs import Nonzero_FVS
 
-
+# TODO: change the names of the RFCAR to RFObject
 class Sparse_CNN_2layer_forward(object):
 	"""docstring for Sparse_CNN_2layer"""
 	def __init__(self, FVS, weights,bias,ch,f,RFCar=None):
@@ -16,7 +16,7 @@ class Sparse_CNN_2layer_forward(object):
 		self.ch=ch
 		self.f=f
 		self.RFCar=RFCar
-
+	# TODO: init a single tensor for all the gradients
 	'''The Sparse Convolution or the voting operation Section 3 A'''
 	def forward(self):
 		FVS=self.FVS
@@ -69,11 +69,13 @@ class Sparse_CNN_2layer_forward(object):
 				count=0
 #				FV=FVS[cell]
 				c=np.array(cell, dtype=int)
-				if (c[0]+2) < (RFCar[0]) and (c[1]+2)<RFCar[1] and (c[2]+2)<RFCar[2] and c[0]!=0 and c[1]!=0 and c[2]!=0:
+				# TODO: why this conditional statement?
+				if (c[0]+2) < (RFCar[0]) and (c[1]+2)<RFCar[1] and (c[2]+2)<RFCar[2] and 
+				c[0]!=0 and c[1]!=0 and c[2]!=0:
 					
 					score[c[0]-1:c[0]+2,c[1]-1:c[1]+2,c[2]-1:c[2]+2]+=np.sum(weight*FV, axis=-1)			
 					
-
+					# TODO: Try to do more efficiently
 					grad_w222[c[0]-1,c[1]-1,c[2]-1,:,i]=FV
 					grad_w221[c[0]-1,c[1]-1,c[2],:,i]=FV
 					grad_w220[c[0]-1,c[1]-1,c[2]+1,:,i]=FV
@@ -102,8 +104,8 @@ class Sparse_CNN_2layer_forward(object):
 					grad_w001[c[0]+1,c[1]+1,c[2],:,i]=FV
 					grad_w000[c[0]+1,c[1]+1,c[2]+1,:,i]=FV
 
-			grad_b[:,:,:,i]=np.where(score!=0, 1, score)
-			score=np.where(score!=0, score+bias[i], score)
+			grad_b[:,:,:,i]=np.where(score!=0, 1, 0)
+			score=np.where(score!=0, score+bias[i], 0)
 
 			scores[:,:,:,i]=score
 			

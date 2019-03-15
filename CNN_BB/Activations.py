@@ -4,12 +4,10 @@ class Activation_Functions:
 	"""docstring for Activation_Functions"""
 	def __init__(self, x):
 		self.x = x
-		
+	
 	'''Caliculating the RelU activation Section 3 B'''
 	def relu(self):
-		x=self.x
-		mask  = (x >0) * 1.0 
-		return mask * x
+		return np.maximum(self.x,0)
 
 	'''Caliculating the differentiation of RelU values for input'''
 	def d_relu(self):

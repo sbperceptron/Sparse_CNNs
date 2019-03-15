@@ -76,6 +76,15 @@ class Sparse_CNN_2layer_backward(object):
 		gradforw2=np.zeros((self.w2.shape))
 		f2=self.f2
 		for ch in range(0,self.ch2):
+			idx=0
+			for x in range(0,2):
+				for y in range (0,2):
+					for z in range (0,2):
+						gradforw2[x,y,z,ch,:]=np.sum(gradforw2_part1*
+							                         (grad[idx][:, :, :, ch, :].reshape(-1, f2)),
+							                         axis=0)
+						idx+=1
+'''
 			gradforw2[0,0,0,ch,:]=np.sum(gradforw2_part1*(grad[0][:,:,:,ch,:].reshape(-1,f2)),axis=0)
 			gradforw2[0,0,1,ch,:]=np.sum(gradforw2_part1*(grad[1][:,:,:,ch,:].reshape(-1,f2)),axis=0)
 			gradforw2[0,0,2,ch,:]=np.sum(gradforw2_part1*(grad[2][:,:,:,ch,:].reshape(-1,f2)),axis=0)
@@ -103,13 +112,15 @@ class Sparse_CNN_2layer_backward(object):
 			gradforw2[2,2,0,ch,:]=np.sum(gradforw2_part1*(grad[24][:,:,:,ch,:].reshape(-1,f2)),axis=0)
 			gradforw2[2,2,1,ch,:]=np.sum(gradforw2_part1*(grad[25][:,:,:,ch,:].reshape(-1,f2)),axis=0)
 			gradforw2[2,2,2,ch,:]=np.sum(gradforw2_part1*(grad[26][:,:,:,ch,:].reshape(-1,f2)),axis=0)
-			
+'''
+
 		return gradforw2
 
 	def dE_db2(self):
 		gradforb2_part1=self.dE_dout()*self.dout_dx3(self.w3.T)*self.dx3_drelu2()*self.drelu2_dx2()
 		
 		gradforb2=np.zeros((self.b2.shape))
+		# TODO: change the value 8 to the number of filters
 		for i in range(0,8):
 			dummy=np.zeros((self.conv2.shape))
 			dummy[:,:,:,i]=self.dx2_db2[:,:,:,i]
@@ -135,7 +146,7 @@ class Sparse_CNN_2layer_backward(object):
 				count=0
 #				FV=FVS[cell]
 				c=np.array(cell, dtype=int)
-				
+				# TODO: remove the conditional statement from here
 				if (c[0]+2) < (RFCar[0]) and (c[1]+2)<RFCar[1] and (c[2]+2)<RFCar[2] and c[0]!=0 and c[1]!=0 and c[2]!=0:
 					
 					score[c[0]-1:c[0]+2,c[1]-1:c[1]+2,c[2]-1:c[2]+2]+=np.sum(weight*FV, axis=-1)			

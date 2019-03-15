@@ -6,7 +6,7 @@ from CNN_BB import Activation_Functions,Loss_Functions
 from CNN_BB import Nonzero_FVS
 
 def nn_model2(single_worker):
-	
+	# TODO: read the parameters for channels and filters by layer
 	FVS,label,w1,w2,w3,b1,b2,b3,RFCar,signal,ch1,ch2,f1,f2=single_worker
 
 	# time.sleep(random.randint(1,3))
@@ -49,6 +49,7 @@ def nn_model2(single_worker):
 	# print "\n"
 	# # gradients for layer 2
 	# weights 2 gradient
+	# TODO: rename the variable signal with something that speak for itself
 	if signal:
 		return cost,output
 	else:

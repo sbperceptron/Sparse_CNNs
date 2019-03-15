@@ -168,7 +168,7 @@ if not args["resume_train"]:
     b2 = np.zeros(num_filters2)
 
     # fig 3 from paper w1
-    wght3 = torch.empty((receptive_field[0])*(receptive_field[1])*(receptive_field[2])*8, 1)
+    wght3 = torch.empty((receptive_field[0])*(receptive_field[1])*(receptive_field[2])*num_filters2, 1)
     weights3 = nn.init.kaiming_normal_(wght3, mode='fan_in', nonlinearity='relu')
     weights3 = weights3.numpy()
     b3 = np.zeros(1) # page 4 b=0
