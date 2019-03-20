@@ -1,1 +1,2 @@
-The model definition
+The model used to train the network. The models are built by stacking the sparse cnn layers.
+Note: Currently the backward propagation implementation is not modular to stack n number of layers. It is designed to do bacward propagation for two sparse cnn layers. This limits the user to stack "N" number of layers.
