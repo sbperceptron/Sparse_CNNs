@@ -50,8 +50,18 @@ Given the places,rotates,sizes create the object ranges from
 ## Object_ranges: 
 For all the objects in the point cloud  find the places,rotates,sizes of objects in there and then use the find_object_ranges function to find all the ranges
 
+# hard_medium_easy_split.py
+Split the crops test set into hard, medium, easy subsets for each object based on the number of points for each object. (if >150 easy, 50 to 100 medium, hard other wise)
+
 # data.py
 The main function used to create the test,train split of the full pointcloud data and the positive and negative crops from the full point clouds
 
 Dependent on the create_negpos_dataset.py file
+
+# create_positive.py
+Find the receptive field size for each object using objs_receptive_field.py function and then crop positive objects from the point clouds and store the cropped point data to the disk.
+
+# create_negative.py
+After creating the positive dataset. Create a negative data set equal to the number of positive crops for each object. The crops are made at location where the objects are not present. the final set of negative crops obtained after the process are saved to disk.
+
 
